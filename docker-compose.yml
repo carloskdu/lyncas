@@ -1,0 +1,85 @@
+version: "3.3"
+
+services:
+  db:
+    container_name: lyncas_db
+    image: mariadb
+    networks:
+      z2:
+        aliases:
+          - mysql
+    environment:
+      MYSQL_USER: 'root'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'password'
+      MYSQL_DATABASE: 'lyncas'
+    volumes:
+        - ./storage/mysql:/var/lib/mysql
+    ports:
+      - 3388:3306
+  workspace:
+      container_name: workspace
+      build:
+        context: ./env/docker/workspace
+        args:
+          - PHP_VERSION=${PHP_VERSION}
+          - PHP_XDEBUG_ENABLE=${PHP_XDEBUG_ENABLE}
+          - PHP_XDEBUG_VERSION=${PHP_XDEBUG_VERSION}
+          - PHP_XDEBUG_REMOTE_CONNECT_BACK=${PHP_XDEBUG_REMOTE_CONNECT_BACK}
+          - COMPOSER_PROCESS_TIMEOUT=${COMPOSER_PROCESS_TIMEOUT}
+          - COMPOSER_MEMORY_LIMIT=-1
+      volumes:
+        - ./:/var/www:cached
+        - ~/.ssh:/home/laradock/.ssh
+        - ~/.gitconfig:/home/laradock/.gitconfig
+        - ~/.config/composer:/home/laradock/.config/composer
+        - ~/.aws:/home/laradock/.aws
+      tty: true
+      networks:
+         z2:
+
+# PHP-FPM
+  php-fpm:
+      container_name: php_fpm
+      build:
+        context: ./env/docker/php-fpm
+        args:
+          - PHP_VERSION=${PHP_VERSION}
+          - PHP_XDEBUG_ENABLE=${PHP_XDEBUG_ENABLE}
+          - PHP_XDEBUG_VERSION=${PHP_XDEBUG_VERSION}
+          - PHP_XDEBUG_REMOTE_CONNECT_BACK=${PHP_XDEBUG_REMOTE_CONNECT_BACK}
+      volumes:
+        - ./:/var/www:cached
+      depends_on:
+        - workspace
+      networks:
+         z2:
+
+# NGINX
+  nginx:
+      container_name: nginx
+      build:
+        context: ./env/docker/nginx
+      volumes:
+        - ./:/var/www:cached
+        - ${NGINX_HOST_LOG_PATH}:/var/log/nginx
+      depends_on:
+        - php-fpm
+        - db
+      environment:
+        - HTTPS_METHOD=${HTTPS_METHOD}
+      ports:
+        - 8888:80
+      networks:
+         z2:
+  # Redis
+  redis:
+      container_name: redis
+      image: "redis"
+      hostname: redis
+      networks:
+         z2:
+
+networks:
+  z2:
+    driver: bridge
