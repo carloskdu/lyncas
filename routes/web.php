@@ -19,4 +19,5 @@ Route::get('/home', '\App\Http\Controllers\GbooksController@home');
 
 Route::get('/pesquisar',['as'=>'pesquisar','uses'=>'\App\Http\Controllers\GbooksController@search']);
 Route::post('/pesquisar',['as'=>'pesquisar','uses'=>'\App\Http\Controllers\GbooksController@search']);
-Route::get('/favorito', '\App\Http\Controllers\GbooksController@search');
+Route::get('/favorito', '\App\Http\Controllers\favoritosController@favoritos');
+Route::post('/salvar',['as'=>'salvar','uses'=>'\App\Http\Controllers\favoritosController@salvar']);

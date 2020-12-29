@@ -57,13 +57,13 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" href="/pesquisar">
+            <a class="nav-link " href="/pesquisar">
               <span data-feather="file"></span>
               Pesquisa
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/favorito">
+            <a class="nav-link active" href="/favorito">
               <span data-feather="shopping-cart"></span>
               Meus Favoritos
             </a>
@@ -73,36 +73,21 @@
     </nav>
 
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Pesquisa de Livros</h1>
-        <form class="" action="{{route('pesquisar')}}" method="post" enctype="multipart/form-data">
-          {{ csrf_field() }}
-          <input type="text" class="form-control col-8" maxlength="50" name="search" value=""> 
-          <button type="submit" class="btn btn-success">Pesquisar</button>
-        </form>
-      </div>
-    
-    <h2>Lista de Livros</h2>
+  
+    <h2>Lista de Favoritos</h2>
       <div class="table-responsive">
         <table class="table table-striped table-sm">
           <thead>
             <tr>
               <th>Image</th>
               <th>Description</th>
-              <th>Favoritar</th>
             </tr>
           </thead>
           <tbody>
-          @foreach($items as $lista)
+          @foreach($lista as $lista)
                     <tr>
-                      <td><img src='{{$lista->volumeInfo->imageLinks->thumbnail }}' /></td>
+                    <td><img src='{{$lista->volumeInfo->imageLinks->thumbnail }}' /></td>
                       <td>{{$lista->volumeInfo->title }}</td>
-                      <td><form class="" action="{{route('salvar')}}" method="post" enctype="multipart/form-data">
-                              {{ csrf_field() }}
-                              <input type="hidden" class="form-control col-8" maxlength="50" name="link" value="{{$lista->selfLink}}"> 
-                              <button type="submit" class="btn btn-info">Favorito</button>
-                            </form>
-                          </td>
                     </tr>
                     @endforeach
           </tbody>

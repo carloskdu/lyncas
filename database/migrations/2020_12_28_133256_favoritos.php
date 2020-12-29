@@ -14,7 +14,7 @@ class Favoritos extends Migration
     public function up()
     {
         Schema::create('favoritos', function (Blueprint $table) {
-            $table->integer('id')->unsigned();
+            $table->increments('id');
             $table->string('link')->unique();;            
             $table->timestamps();           
         });
